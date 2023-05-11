@@ -10,12 +10,13 @@ fn main() {
     let mut user_input;
 
     loop {
-        user_input = read_user_input();
+        let raw_input = read_user_input();
+        user_input = raw_input.trim();
 
-        if user_input.trim() == EXIT_COMMAND {
+        if user_input == EXIT_COMMAND {
             exit(EXIT_SUCCESS)
         } else {
-            print!("unrecognized command: {}", user_input);
+            println!("unrecognized command: '{}'", user_input);
         }
     }
 }
