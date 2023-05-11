@@ -1,3 +1,2 @@
-pub mod command;
-
-pub use command::MetaCommand;
+pub mod meta;
+pub mod statement;

@@ -1,32 +1,41 @@
-mod cli;
 mod command;
+mod constant;
+mod utils;
 
-use std::process::exit;
+use command::{
+    meta::{self, MetaCommandStatus},
+    statement::{self, PrepareStatus},
+};
+use constant::constant::META_CMD_INDICATOR;
 
-use crate::command::MetaCommand;
-
-const EXIT_SUCCESS: i32 = 0;
+use crate::utils::cli;
 
 fn main() {
-    let mut user_input;
+    let mut user_input: &str;
 
     loop {
         let raw_input = cli::read_user_input();
         user_input = raw_input.trim();
 
-        if user_input.starts_with(".") {
-            user_input = &user_input[1..];
-
-            let meta_cmd = MetaCommand::get_meta_command(user_input);
-            match meta_cmd {
-                MetaCommand::Exit => exit(EXIT_SUCCESS),
-                MetaCommand::Version => println!("AnchorDB version: 1.0.0"),
-                _ => println!("unrecognized command: '{}'", user_input),
+        if user_input == "" {
+            continue;
+        } else if user_input.starts_with(META_CMD_INDICATOR) {
+            let result = meta::do_meta_command(user_input);
+            match result {
+                MetaCommandStatus::Success => {}
+                MetaCommandStatus::UnrecognizedCommand => {
+                    println!("unrecognized command: '{}'", user_input);
+                }
             }
         } else {
-            // parse SQL
+            let result = statement::do_prepared_statement(user_input);
+            match result {
+                PrepareStatus::Success => {}
+                PrepareStatus::UnrecognizedStatement => {
+                    println!("unrecognized command: '{}'", user_input);
+                }
+            }
+            // execute_statement(statement);
         }
-
-
     }
 }
